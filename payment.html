@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Financial Collection</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #e9ecef; margin: 0; padding: 20px; }
+        .form-container { max-width: 550px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-top: 8px solid #004085; }
+        h2 { text-align: center; color: #004085; margin-bottom: 20px; }
+        .row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .field { flex: 1; display: flex; flex-direction: column; }
+        label { font-weight: 600; margin-bottom: 5px; color: #495057; font-size: 13px; }
+        input, select { padding: 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; }
+        .extra-input { margin-top: 10px; display: none; }
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 2; padding: 15px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-submit { background-color: #004085; }
+        .btn-clear { flex: 1; background-color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Financial Collection</h2>
+    <!-- Update the action URL below -->
+    <form id="collectionForm" action="https://script.google.com/macros/s/AKfycbyq9v0cgTbe_EMcv2M2c-11aEiEzVdpoWDbBi0mNhpJX7nABCrAsP7fxJT7U72ahP7cDg/exec" method="POST">
+        
+        <div class="row">
+            <div class="field">
+                <label>Service Invoice No.</label>
+                <input type="text" name="InvoiceNo" id="invoiceNo" required>
+            </div>
+            <div class="field">
+                <label>Date</label>
+                <input type="date" name="Date" id="date" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Student Name</label>
+                <input type="text" name="Name" required>
+            </div>
+            <div class="field">
+                <label>Grade Level</label>
+                <select name="GradeLevel" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="Kinder">Kinder</option>
+                    <option value="Grade 1">Grade 1</option> <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option> <option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option> <option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option> <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option> <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option> <option value="Grade 12">Grade 12</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field" style="margin-bottom: 15px;">
+            <label>Description</label>
+            <select id="descSelect" onchange="checkOthers('descSelect', 'descOtherContainer', 'descFinal')">
+                <option value="Tuition Fee">Tuition Fee</option>
+                <option value="Miscellaneous Fee">Miscellaneous Fee</option>
+                <option value="Books">Books</option>
+                <option value="Others">Others</option>
+            </select>
+            <div id="descOtherContainer" class="extra-input">
+                <input type="text" id="descOtherInput" placeholder="Specify here..." oninput="syncDesc()">
+            </div>
+            <!-- Hidden field that actually sends the value to the sheet -->
+            <input type="hidden" name="Description" id="descFinal" value="Tuition Fee">
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>Amount</label>
+                <input type="number" name="Amount" step="0.01" required>
+            </div>
+            <div class="field">
+                <label>Mode of Payment</label>
+                <select id="modeSelect" onchange="checkOthers('modeSelect', 'modeOtherContainer', 'modeFinal')">
+                    <option value="Cash">Cash</option>
+                    <option value="GCash">GCash</option>
+                    <option value="BPI">BPI</option>
+                    <option value="Landbank">Landbank</option>
+                    <option value="Others">Others</option>
+                </select>
+                <div id="modeOtherContainer" class="extra-input">
+                    <input type="text" id="modeOtherInput" placeholder="Specify here..." oninput="syncMode()">
+                </div>
+                <input type="hidden" name="ModeOfPayment" id="modeFinal" value="Cash">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Received By</label>
+            <input type="text" name="ReceivedBy" required>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn-submit" id="submitBtn">Submit Entry</button>
+            <button type="button" class="btn-clear" onclick="location.reload()">Clear</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('date').valueAsDate = new Date();
+
+    function checkOthers(selectId, containerId, hiddenId) {
+        const sel = document.getElementById(selectId);
+        const cont = document.getElementById(containerId);
+        const hid = document.getElementById(hiddenId);
+        
+        if(sel.value === 'Others') {
+            cont.style.display = 'block';
+            hid.value = ''; // Wait for input
+        } else {
+            cont.style.display = 'none';
+            hid.value = sel.value;
+        }
+    }
+
+    function syncDesc() { document.getElementById('descFinal').value = document.getElementById('descOtherInput').value; }
+    function syncMode() { document.getElementById('modeFinal').value = document.getElementById('modeOtherInput').value; }
+
+    const form = document.getElementById('collectionForm');
+    form.addEventListener('submit', e => {
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').innerHTML = "Sending...";
+        // The form will now naturally POST to the Google Apps Script URL
+    });
+</script>
+
+</body>
+</html>
