@@ -3,31 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Financial Collection</title>
+    <title>School Financial Portal</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #e9ecef; margin: 0; padding: 20px; }
-        .form-container { max-width: 550px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-top: 8px solid #004085; }
+        .form-container { max-width: 550px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-top: 8px solid #004085; transition: border-top 0.3s; }
+        /* Shift to Red when Cash Out is selected */
+        .form-container.cash-out { border-top-color: #dc3545; }
         h1 { text-align: center; color: #004085; margin-bottom: 10px; font-weight: 1000}
         h2 { text-align: center; color: #004085; margin-bottom: 20px; }
+        .cash-out h2 { color: #dc3545; }
+        
         .row { display: flex; gap: 15px; margin-bottom: 15px; }
         .field { flex: 1; display: flex; flex-direction: column; }
         label { font-weight: 600; margin-bottom: 5px; color: #495057; font-size: 13px; }
         input, select { padding: 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; }
         .extra-input { margin-top: 10px; display: none; }
+        
         .button-group { display: flex; gap: 10px; margin-top: 20px; }
-        button { flex: 2; padding: 15px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; }
+        button { flex: 2; padding: 15px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; }
         .btn-submit { background-color: #004085; }
+        .cash-out .btn-submit { background-color: #dc3545; }
         .btn-clear { flex: 1; background-color: #6c757d; }
+        
+        #successMessage { display:none; background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb; }
     </style>
 </head>
 <body>
 
-<div class="form-container">
+<div class="form-container" id="container">
     <h1>Educare College Inc.</h1>
-    <h2>Financial Collection</h2>
-    <!-- Update the action URL below -->
+    <h2 id="formTitle">Financial Collection</h2>
+    
+    <div id="successMessage">Successful Data Entry</div>
+
     <form id="collectionForm" action="https://script.google.com/macros/s/AKfycbyq9v0cgTbe_EMcv2M2c-11aEiEzVdpoWDbBi0mNhpJX7nABCrAsP7fxJT7U72ahP7cDg/exec" method="POST">
         
+        <!-- Transaction Type Switch -->
+        <div class="field" style="margin-bottom: 20px;">
+            <label>Transaction Type</label>
+            <select name="TransactionType" id="transType" onchange="updateFormMode()">
+                <option value="Collection">Collection (Income)</option>
+                <option value="Cash Out">Cash Out (Expense)</option>
+            </select>
+        </div>
+
         <div class="row">
             <div class="field">
                 <label>Service Invoice No.</label>
@@ -41,62 +60,67 @@
 
         <div class="row">
             <div class="field">
-                <label>Student Name</label>
+                <label>Name (Student/Payee)</label>
                 <input type="text" name="Name" required>
             </div>
             <div class="field">
                 <label>Grade Level</label>
-                <select name="GradeLevel" required>
-                    <option value="" disabled selected>Select</option>
+                <select name="GradeLevel">
+                    <option value="N/A">N/A (For Cash Out)</option>
                     <option value="Kinder">Kinder</option>
-                    <option value="Grade 1">Grade 1</option> <option value="Grade 2">Grade 2</option>
-                    <option value="Grade 3">Grade 3</option> <option value="Grade 4">Grade 4</option>
-                    <option value="Grade 5">Grade 5</option> <option value="Grade 6">Grade 6</option>
-                    <option value="Grade 7">Grade 7</option> <option value="Grade 8">Grade 8</option>
-                    <option value="Grade 9">Grade 9</option> <option value="Grade 10">Grade 10</option>
-                    <option value="Grade 11">Grade 11</option> <option value="Grade 12">Grade 12</option>
+                    <option value="Grade 1">Grade 1</option>
+                    <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option>
+                    <option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option>
+                    <option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
                 </select>
             </div>
         </div>
 
         <div class="field" style="margin-bottom: 15px;">
             <label>Description</label>
-            <select id="descSelect" onchange="checkOthers('descSelect', 'descOtherContainer', 'descFinal')">
+            <select id="descSelect" onchange="toggleOthers('descSelect', 'descOtherCont', 'descFinal')">
                 <option value="Tuition Fee">Tuition Fee</option>
                 <option value="Miscellaneous Fee">Miscellaneous Fee</option>
                 <option value="Books">Books</option>
                 <option value="Others">Others</option>
             </select>
-            <div id="descOtherContainer" class="extra-input">
-                <input type="text" id="descOtherInput" placeholder="Specify here..." oninput="syncDesc()">
+            <div id="descOtherCont" class="extra-input">
+                <input type="text" id="descOtherInput" placeholder="Specify description..." oninput="sync('descOtherInput', 'descFinal')">
             </div>
-            <!-- Hidden field that actually sends the value to the sheet -->
             <input type="hidden" name="Description" id="descFinal" value="Tuition Fee">
         </div>
 
         <div class="row">
             <div class="field">
                 <label>Amount</label>
-                <input type="number" name="Amount" step="0.01" required>
+                <input type="number" name="Amount" id="amountInput" step="0.01" required>
             </div>
             <div class="field">
                 <label>Mode of Payment</label>
-                <select id="modeSelect" onchange="checkOthers('modeSelect', 'modeOtherContainer', 'modeFinal')">
+                <select id="modeSelect" onchange="toggleOthers('modeSelect', 'modeOtherCont', 'modeFinal')">
                     <option value="Cash">Cash</option>
                     <option value="GCash">GCash</option>
                     <option value="BPI">BPI</option>
                     <option value="Landbank">Landbank</option>
                     <option value="Others">Others</option>
                 </select>
-                <div id="modeOtherContainer" class="extra-input">
-                    <input type="text" id="modeOtherInput" placeholder="Specify here..." oninput="syncMode()">
+                <div id="modeOtherCont" class="extra-input">
+                    <input type="text" id="modeOtherInput" placeholder="Specify mode..." oninput="sync('modeOtherInput', 'modeFinal')">
                 </div>
                 <input type="hidden" name="ModeOfPayment" id="modeFinal" value="Cash">
             </div>
         </div>
 
         <div class="field">
-            <label>Received By</label>
+            <label>Received/Authorized By</label>
             <input type="text" name="ReceivedBy" required>
         </div>
 
@@ -110,28 +134,68 @@
 <script>
     document.getElementById('date').valueAsDate = new Date();
 
-    function checkOthers(selectId, containerId, hiddenId) {
-        const sel = document.getElementById(selectId);
-        const cont = document.getElementById(containerId);
-        const hid = document.getElementById(hiddenId);
-        
+    function updateFormMode() {
+        const type = document.getElementById('transType').value;
+        const container = document.getElementById('container');
+        const title = document.getElementById('formTitle');
+        if (type === "Cash Out") {
+            container.classList.add('cash-out');
+            title.innerText = "Financial Cash Out";
+        } else {
+            container.classList.remove('cash-out');
+            title.innerText = "Financial Collection";
+        }
+    }
+
+    function toggleOthers(sId, cId, hId) {
+        const sel = document.getElementById(sId);
+        const cont = document.getElementById(cId);
+        const hid = document.getElementById(hId);
         if(sel.value === 'Others') {
             cont.style.display = 'block';
-            hid.value = ''; // Wait for input
+            hid.value = '';
         } else {
             cont.style.display = 'none';
             hid.value = sel.value;
         }
     }
 
-    function syncDesc() { document.getElementById('descFinal').value = document.getElementById('descOtherInput').value; }
-    function syncMode() { document.getElementById('modeFinal').value = document.getElementById('modeOtherInput').value; }
+    function sync(iId, hId) { document.getElementById(hId).value = document.getElementById(iId).value; }
 
     const form = document.getElementById('collectionForm');
     form.addEventListener('submit', e => {
-        document.getElementById('submitBtn').disabled = true;
-        document.getElementById('submitBtn').innerHTML = "Sending...";
-        // The form will now naturally POST to the Google Apps Script URL
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMessage');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "Processing...";
+
+        // Logic to make amount negative if Cash Out
+        const amountField = document.getElementById('amountInput');
+        const originalValue = amountField.value;
+        if(document.getElementById('transType').value === "Cash Out") {
+            amountField.value = -Math.abs(amountField.value);
+        }
+
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            mode: 'no-cors'
+        })
+        .then(() => {
+            successMsg.style.display = 'block';
+            form.reset();
+            document.getElementById('date').valueAsDate = new Date();
+            updateFormMode();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = "Submit Entry";
+            setTimeout(() => { successMsg.style.display = 'none'; }, 4000);
+        })
+        .catch(err => {
+            alert("Error saving data.");
+            submitBtn.disabled = false;
+        });
     });
 </script>
 
