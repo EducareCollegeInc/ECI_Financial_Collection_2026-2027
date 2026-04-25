@@ -164,14 +164,19 @@
 
     function sync(iId, hId) { document.getElementById(hId).value = document.getElementById(iId).value; }
 
-    const form = document.getElementById('collectionForm');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submitBtn');
-        const successMsg = document.getElementById('successMessage');
-        
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = "Processing...";
+  const form = document.getElementById('collectionForm');
+
+form.addEventListener('submit', e => {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const modeSelect = document.getElementById('modeSelect');
+    const modeOtherInput = document.getElementById('modeOtherInput');
+
+    // If 'Others' is selected, override the 'ModeOfPayment' value with the text input
+    if (modeSelect.value === 'Others') {
+        formData.set('ModeOfPayment', modeOtherInput.value);
+    }
 
         // Logic to make amount negative if Cash Out
         const amountField = document.getElementById('amountInput');
@@ -180,11 +185,12 @@
             amountField.value = -Math.abs(amountField.value);
         }
 
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            mode: 'no-cors'
-        })
+        // Now proceed with your fetch call using the updated formData
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+    })
         .then(() => {
             successMsg.style.display = 'block';
             form.reset();
