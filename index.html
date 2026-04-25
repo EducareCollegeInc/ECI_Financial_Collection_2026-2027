@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Financial Portal</title>
+    <title>School Financial Portal - Educare College Inc.</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #e9ecef; margin: 0; padding: 20px; }
         .form-container { max-width: 550px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-top: 8px solid #004085; transition: border-top 0.3s; }
-        /* Shift to Red when Cash Out is selected */
         .form-container.cash-out { border-top-color: #dc3545; }
-        h1 { text-align: center; color: #004085; margin-bottom: 10px; font-weight: 1000}
-        h2 { text-align: center; color: #004085; margin-bottom: 20px; }
+        h1 { text-align: center; color: #004085; margin-bottom: 5px; font-weight: 800; font-size: 24px; }
+        h2 { text-align: center; color: #004085; margin-bottom: 20px; font-size: 18px; margin-top: 0; }
         .cash-out h2 { color: #dc3545; }
-        
         .row { display: flex; gap: 15px; margin-bottom: 15px; }
         .field { flex: 1; display: flex; flex-direction: column; }
         label { font-weight: 600; margin-bottom: 5px; color: #495057; font-size: 13px; }
-        input, select { padding: 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; }
+        input, select { padding: 12px; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        input:focus, select:focus { outline: none; border-color: #004085; box-shadow: 0 0 5px rgba(0,64,133,0.2); }
         .extra-input { margin-top: 10px; display: none; }
-        
         .button-group { display: flex; gap: 10px; margin-top: 20px; }
         button { flex: 2; padding: 15px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; }
         .btn-submit { background-color: #004085; }
         .cash-out .btn-submit { background-color: #dc3545; }
         .btn-clear { flex: 1; background-color: #6c757d; }
-        
-        #successMessage { display:none; background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb; }
+        #successMessage { display:none; background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; border: 1px solid #c3e6cb; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -36,9 +33,8 @@
     
     <div id="successMessage">Successful Data Entry</div>
 
-    <form id="collectionForm" action="https://script.google.com/macros/s/AKfycbyq9v0cgTbe_EMcv2M2c-11aEiEzVdpoWDbBi0mNhpJX7nABCrAsP7fxJT7U72ahP7cDg/exec" method="POST">
+    <form id="collectionForm" action="https://google.com" method="POST">
         
-        <!-- Transaction Type Switch -->
         <div class="field" style="margin-bottom: 20px;">
             <label>Transaction Type</label>
             <select name="TransactionType" id="transType" onchange="updateFormMode()">
@@ -66,36 +62,29 @@
             <div class="field">
                 <label>Grade Level</label>
                 <select name="GradeLevel">
-                    <option value="N/A">N/A (For Cash Out)</option>
+                    <option value="N/A">N/A</option>
                     <option value="Kinder">Kinder</option>
-                    <option value="Grade 1">Grade 1</option>
-                    <option value="Grade 2">Grade 2</option>
-                    <option value="Grade 3">Grade 3</option>
-                    <option value="Grade 4">Grade 4</option>
-                    <option value="Grade 5">Grade 5</option>
-                    <option value="Grade 6">Grade 6</option>
-                    <option value="Grade 7">Grade 7</option>
-                    <option value="Grade 8">Grade 8</option>
-                    <option value="Grade 9">Grade 9</option>
-                    <option value="Grade 10">Grade 10</option>
-                    <option value="Grade 11">Grade 11</option>
-                    <option value="Grade 12">Grade 12</option>
+                    <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
                 </select>
             </div>
         </div>
 
         <div class="field" style="margin-bottom: 15px;">
             <label>Description</label>
-            <select id="descSelect" onchange="toggleOthers('descSelect', 'descOtherCont', 'descFinal')">
+            <select name="Description" id="descSelect" onchange="toggleOthers('descSelect', 'descOtherCont', 'descOtherInput')">
                 <option value="Tuition Fee">Tuition Fee</option>
                 <option value="Miscellaneous Fee">Miscellaneous Fee</option>
                 <option value="Books">Books</option>
                 <option value="Others">Others</option>
             </select>
             <div id="descOtherCont" class="extra-input">
-                <input type="text" id="descOtherInput" placeholder="Specify description..." oninput="sync('descOtherInput', 'descFinal')">
+                <input type="text" id="descOtherInput" placeholder="Please specify description...">
             </div>
-            <input type="hidden" name="Description" id="descFinal" value="Tuition Fee">
         </div>
 
         <div class="row">
@@ -104,21 +93,18 @@
                 <input type="number" name="Amount" id="amountInput" step="0.01" required>
             </div>
             <div class="field">
-    <label>Mode of Payment</label>
-    <!-- Put the name directly on the select -->
-    <select name="ModeOfPayment" id="modeSelect" onchange="toggleOthers('modeSelect', 'modeOtherCont', 'modeOtherInput')">
-        <option value="Cash">Cash</option>
-        <option value="GCash">GCash</option>
-        <option value="BPI">BPI</option>
-        <option value="Landbank">Landbank</option>
-        <option value="Others">Others</option>
-    </select>
-    
-    <div id="modeOtherCont" class="extra-input">
-        <input type="text" id="modeOtherInput" placeholder="Specify mode...">
-    </div>
-</div>
-
+                <label>Mode of Payment</label>
+                <select name="ModeOfPayment" id="modeSelect" onchange="toggleOthers('modeSelect', 'modeOtherCont', 'modeOtherInput')">
+                    <option value="Cash">Cash</option>
+                    <option value="GCash">GCash</option>
+                    <option value="BPI">BPI</option>
+                    <option value="Landbank">Landbank</option>
+                    <option value="Others">Others</option>
+                </select>
+                <div id="modeOtherCont" class="extra-input">
+                    <input type="text" id="modeOtherInput" placeholder="Please specify mode...">
+                </div>
+            </div>
         </div>
 
         <div class="field">
@@ -149,60 +135,68 @@
         }
     }
 
-    function toggleOthers(sId, cId, hId) {
-        const sel = document.getElementById(sId);
-        const cont = document.getElementById(cId);
-        const hid = document.getElementById(hId);
-        if(sel.value === 'Others') {
-            cont.style.display = 'block';
-            hid.value = '';
+    function toggleOthers(selectId, containerId, inputId) {
+        const select = document.getElementById(selectId);
+        const container = document.getElementById(containerId);
+        const input = document.getElementById(inputId);
+        if(select.value === 'Others') {
+            container.style.display = 'block';
+            input.required = true;
         } else {
-            cont.style.display = 'none';
-            hid.value = sel.value;
+            container.style.display = 'none';
+            input.required = false;
+            input.value = "";
         }
     }
 
-    function sync(iId, hId) { document.getElementById(hId).value = document.getElementById(iId).value; }
+    const form = document.getElementById('collectionForm');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMessage');
+        const amountInput = document.getElementById('amountInput');
+        const transType = document.getElementById('transType').value;
 
-  const form = document.getElementById('collectionForm');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "Processing...";
 
-form.addEventListener('submit', e => {
-    e.preventDefault();
-    
-    const formData = new FormData(form);
-    const modeSelect = document.getElementById('modeSelect');
-    const modeOtherInput = document.getElementById('modeOtherInput');
+        let formData = new FormData(form);
 
-    // If 'Others' is selected, override the 'ModeOfPayment' value with the text input
-    if (modeSelect.value === 'Others') {
-        formData.set('ModeOfPayment', modeOtherInput.value);
-    }
-
-        // Logic to make amount negative if Cash Out
-        const amountField = document.getElementById('amountInput');
-        const originalValue = amountField.value;
-        if(document.getElementById('transType').value === "Cash Out") {
-            amountField.value = -Math.abs(amountField.value);
+        // Handle 'Others' for Description
+        if (document.getElementById('descSelect').value === 'Others') {
+            formData.set('Description', document.getElementById('descOtherInput').value);
         }
 
-        // Now proceed with your fetch call using the updated formData
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors'
-    })
+        // Handle 'Others' for Mode of Payment
+        if (document.getElementById('modeSelect').value === 'Others') {
+            formData.set('ModeOfPayment', document.getElementById('modeOtherInput').value);
+        }
+
+        // Make amount negative if Cash Out
+        if(transType === "Cash Out") {
+            formData.set('Amount', -Math.abs(amountInput.value));
+        }
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors'
+        })
         .then(() => {
             successMsg.style.display = 'block';
             form.reset();
             document.getElementById('date').valueAsDate = new Date();
             updateFormMode();
+            document.getElementById('descOtherCont').style.display = 'none';
+            document.getElementById('modeOtherCont').style.display = 'none';
             submitBtn.disabled = false;
             submitBtn.innerHTML = "Submit Entry";
             setTimeout(() => { successMsg.style.display = 'none'; }, 4000);
         })
         .catch(err => {
-            alert("Error saving data.");
+            alert("Error: Data not saved. Check your internet.");
             submitBtn.disabled = false;
+            submitBtn.innerHTML = "Submit Entry";
         });
     });
 </script>
