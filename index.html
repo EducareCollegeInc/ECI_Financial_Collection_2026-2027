@@ -104,19 +104,21 @@
                 <input type="number" name="Amount" id="amountInput" step="0.01" required>
             </div>
             <div class="field">
-                <label>Mode of Payment</label>
-                <select id="modeSelect" onchange="toggleOthers('modeSelect', 'modeOtherCont', 'modeFinal')">
-                    <option value="Cash">Cash</option>
-                    <option value="GCash">GCash</option>
-                    <option value="BPI">BPI</option>
-                    <option value="Landbank">Landbank</option>
-                    <option value="Others">Others</option>
-                </select>
-                <div id="modeOtherCont" class="extra-input">
-                    <input type="text" id="modeOtherInput" placeholder="Specify mode..." oninput="sync('modeOtherInput', 'modeFinal')">
-                </div>
-                <input type="hidden" name="ModeOfPayment" id="modeFinal" value="Cash">
-            </div>
+    <label>Mode of Payment</label>
+    <!-- Put the name directly on the select -->
+    <select name="ModeOfPayment" id="modeSelect" onchange="toggleOthers('modeSelect', 'modeOtherCont', 'modeOtherInput')">
+        <option value="Cash">Cash</option>
+        <option value="GCash">GCash</option>
+        <option value="BPI">BPI</option>
+        <option value="Landbank">Landbank</option>
+        <option value="Others">Others</option>
+    </select>
+    
+    <div id="modeOtherCont" class="extra-input">
+        <input type="text" id="modeOtherInput" placeholder="Specify mode...">
+    </div>
+</div>
+
         </div>
 
         <div class="field">
